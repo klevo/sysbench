@@ -1,24 +1,17 @@
-FROM ubuntu:xenial
+# syntax = docker/dockerfile:1
 
-RUN apt-get update
+FROM debian:stable
 
-RUN apt-get -y install make automake libtool pkg-config libaio-dev git
+RUN apt-get update && apt -y install \
+    make automake libtool pkg-config libaio-dev \
+    default-libmysqlclient-dev libssl-dev \
+    libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-# For MySQL support
-RUN apt-get -y install libmysqlclient-dev libssl-dev
+COPY --link . /sysbench
+WORKDIR /sysbench
+RUN ./autogen.sh && ./configure --with-mysql --with-pgsql && make -j && make install
 
-# For PostgreSQL support
-RUN apt-get -y install libpq-dev
+ENV PATH="${PATH}:/sysbench/src"
 
-RUN git clone https://github.com/akopytov/sysbench.git sysbench
-
-WORKDIR sysbench
-RUN ./autogen.sh
-RUN ./configure --with-mysql --with-pgsql
-RUN make -j
-RUN make install
-
-WORKDIR /root
-RUN rm -rf sysbench
-
-ENTRYPOINT sysbench
+CMD ["sysbench"]

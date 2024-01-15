@@ -308,3 +308,17 @@ For more information on SemVer, please visit [http://semver.org/](http://semver.
 [deb-url]: https://packagecloud.io/akopytov/sysbench?filter=debs
 [rpm-badge]: https://img.shields.io/badge/Packages-RPM-blue.svg?style=flat
 [rpm-url]: https://packagecloud.io/akopytov/sysbench?filter=rpms
+
+# Docker
+
+Build:
+
+```sh
+docker build -t sysbench:latest .
+```
+
+Run:
+
+```sh
+docker run --rm sysbench sysbench --help
+```
