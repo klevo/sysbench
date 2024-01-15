@@ -321,4 +321,7 @@ Run:
 
 ```sh
 docker run --rm sysbench sysbench --help
+
+# CPU test:
+docker run --rm sysbench sysbench cpu --cpu-max-prime=100 run
 ```
