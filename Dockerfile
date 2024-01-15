@@ -1,30 +1,9 @@
 # syntax = docker/dockerfile:1
 
-FROM debian:stable as base
+FROM debian:stable
 
-RUN apt-get update && apt -y install \
-    libaio-dev \
-    default-libmysqlclient-dev libssl-dev \
-    libpq-dev && \
+RUN curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | bash
+RUN apt update && apt -y install sysbench && \
     rm -rf /var/lib/apt/lists/*
-
-
-# Throw-away build stage to reduce size of final image
-FROM base as build
-
-RUN apt-get update && apt -y install \
-    make automake libtool pkg-config && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY --link . /sysbench
-WORKDIR /sysbench
-RUN ./autogen.sh && ./configure --with-mysql --with-pgsql && make -j && make install
-
-
-# Final stage for app image
-FROM base
-
-COPY --from=build /sysbench/src/sysbench /usr/bin/sysbench
-COPY --from=build /sysbench/src/lua /usr/share/sysbench
 
 CMD ["sysbench"]
