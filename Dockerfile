@@ -18,12 +18,13 @@ RUN apt-get update && apt -y install \
 
 COPY --link . /sysbench
 WORKDIR /sysbench
-RUN ./autogen.sh && ./configure --with-mysql --with-pgsql && make -j
+RUN ./autogen.sh && ./configure --with-mysql --with-pgsql && make -j && make install
 
 
 # Final stage for app image
 FROM base
 
 COPY --from=build /sysbench/src/sysbench /usr/bin/sysbench
+COPY --from=build /sysbench/src/lua /usr/share/sysbench
 
 CMD ["sysbench"]
